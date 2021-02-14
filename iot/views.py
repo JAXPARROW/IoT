@@ -14,10 +14,8 @@ from iot.serializers import SwitchSerializer
 
 
 def test(request):
-    if request.method == 'GET':
-        switches = Switch.objects.filter(Q(device_id=3333), Q(port_number=1))
-        switches_serializer = SwitchSerializer(switches, many=True)
-        return JsonResponse(switches_serializer.data, safe=False)
+    return HttpResponse('Yeah It Works!')
+
 
 @csrf_exempt
 def switchbydevice(request):
