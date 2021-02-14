@@ -12,7 +12,7 @@ SWITCH_STATUS = [
 class Device(models.Model):
     device_id = models.CharField(max_length=10, unique=True, blank=False, null=False)
     owner = CharField(max_length=100, blank=False, null=True)
-    created_on = models.DateTimeField(auto_now_add=True, null=True)
+    created_on = models.DateField(auto_now_add=True, null=True)
    
 
     class Meta:
@@ -25,8 +25,9 @@ class Device(models.Model):
 
 
 class Switch(models.Model):
-    # device_id = models.CharField(max_length=100, unique=True, blank=False, null=False)
-    device_id = models.ForeignKey(Device, related_name='switches', on_delete=models.PROTECT)
+    device_id = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    # device_id = models.ForeignKey(Device, related_name='switches', on_delete=models.PROTECT)
+    port_number = models.IntegerField(blank=False, null=False, default=None)
     status = models.CharField(max_length=3,choices=SWITCH_STATUS, blank=False, null=False, default="OFF")
     location = models.CharField(max_length=100, blank=False, null=False, default="unknown")
 

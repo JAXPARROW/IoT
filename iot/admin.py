@@ -16,19 +16,21 @@ class DeviceId(admin.ModelAdmin):
 class SwitchAdmin(admin.ModelAdmin):
     list_display = [
         'device_id',
+        'port_number',
         'location',
         'status'
     ]
     list_display_links = [
         'device_id',
         'location',
-        # 'status',
+    
     ]
     list_editable = [
         'status',
     ]
     list_filter = [
         'status',
+        'device_id',
     ]
     search_fields = [
         'location',

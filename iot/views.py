@@ -1,18 +1,56 @@
-from django.http.response import HttpResponse, JsonResponse
+from django.db.models import manager
+from django.db.models.query_utils import Q
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import generics, status
-from rest_framework.parsers import JSONParser
-from iot.models import Device, Switch, Weather
-from iot.serializers import DeviceSerializers, SwitchSerializer, WeatherSerializer
+from django.shortcuts import render
+from django.http import HttpResponse, request
+from django.http.response import JsonResponse
+# from django.views.decorators import csrf_exempt
 
+from rest_framework import viewsets, status
+from rest_framework.parsers import JSONParser
+
+from iot.models import Device, Switch
+from iot.serializers import SwitchSerializer
+
+
+def test(request):
+    if request.method == 'GET':
+        switches = Switch.objects.filter(Q(device_id=3333), Q(port_number=1))
+        switches_serializer = SwitchSerializer(switches, many=True)
+        return JsonResponse(switches_serializer.data, safe=False)
+
+@csrf_exempt
+def switchbydevice(request):
+    device_id = request.GET.get('device_id','')
+    port_number = request.GET.get('port_number','')
+    # return HttpResponse(device_id)
+    if request.method == 'GET':
+        switches = Switch.objects.filter(Q(device_id=device_id), Q(port_number=port_number))
+        switches_serializer = SwitchSerializer(switches, many=True)
+        return JsonResponse(switches_serializer.data, safe=False)
+    
 
 @csrf_exempt
 def switch_list(request):
-    #retrieve all objects
+    #get all Objects
     if request.method == 'GET':
         switches = Switch.objects.all()
-        switch_serializer = SwitchSerializer(switches, many=True)
-        return JsonResponse(switch_serializer.data, safe=False)
+        switches_serializer = SwitchSerializer(switches, many=True)
+        return JsonResponse(switches_serializer.data, safe=False)
+
+    #add one object
+    if request.method == 'POST':
+        switch_data = JSONParser().parse(request)
+        switch_serialiazer = SwitchSerializer(data=switch_data)
+        if switch_serialiazer.is_valid():
+            switch_serialiazer.save()
+            return JsonResponse(switch_serialiazer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(switch_serialiazer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #delete object
+    if request.method == 'DELETE':
+        Switch.objects.all().delete
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 @csrf_exempt
 def switch_detail(request, pk):
@@ -21,7 +59,7 @@ def switch_detail(request, pk):
     except Switch.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-    #retrieve one record
+    #retrieve one
     if request.method == 'GET':
         switch_serializer = SwitchSerializer(switch)
         return JsonResponse(switch_serializer.data)
@@ -34,23 +72,10 @@ def switch_detail(request, pk):
             switch_serializer.save()
             return JsonResponse(switch_serializer.data)
         return JsonResponse(switch_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    #delete one object
+    if request.method == 'DELETE':
+        switch.delete()
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
-
-class DeviceList(generics.ListAPIView):
-    queryset = Device.objects.all()
-    serializer_class = DeviceSerializers
-
-
-class SwitchByDevice(generics.ListAPIView):
-    serializer_class = SwitchSerializer
-
-    def get_queryset(self):
-        queryset = Switch.objects.all()
-        device_id = self.request.query_params.get('device_id', None)
-        if device_id is not None:
-            queryset = queryset.filter(device_id__device_id=device_id)
-        return queryset        
-
-
-
-
+    
