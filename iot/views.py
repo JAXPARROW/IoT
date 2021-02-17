@@ -17,6 +17,7 @@ def test(request):
     return HttpResponse('Yeah It Works!')
 
 
+#return specific switch from specific device (pass device & port as parameter)
 @csrf_exempt
 def switchbydevice(request):
     device_id = request.GET.get('device_id','')
@@ -26,7 +27,18 @@ def switchbydevice(request):
         switches = Switch.objects.filter(Q(device_id=device_id), Q(port_number=port_number))
         switches_serializer = SwitchSerializer(switches, many=True)
         return JsonResponse(switches_serializer.data, safe=False)
-    
+
+
+#return all switches from single device (pass device as parameter)        
+@csrf_exempt
+def switchfromdevice(request):
+    device_id = request.GET.get('device_id','')
+    # return HttpResponse(device_id)
+    if request.method == 'GET':
+        switches = Switch.objects.filter(Q(device_id=device_id))
+        switches_serializer = SwitchSerializer(switches, many=True)
+        return JsonResponse(switches_serializer.data, safe=False)   
+
 
 @csrf_exempt
 def switch_list(request):
