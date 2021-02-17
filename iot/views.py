@@ -1,12 +1,10 @@
-from django.db.models import manager
 from django.db.models.query_utils import Q
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
-from django.http import HttpResponse, request
+from django.http import HttpResponse
 from django.http.response import JsonResponse
 # from django.views.decorators import csrf_exempt
 
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.parsers import JSONParser
 
 from iot.models import Device, Switch
