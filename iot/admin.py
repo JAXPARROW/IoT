@@ -89,3 +89,5 @@ class WeatherAdmin(admin.ModelAdmin):
     ]
 
 
+admin.site.site_header = "IoT"
+admin.site.site_title = "IoT"
