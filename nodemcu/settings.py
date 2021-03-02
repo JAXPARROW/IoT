@@ -28,12 +28,17 @@ INSTALLED_APPS = [
 
     #Third_Party Apps
     'rest_framework',
+    'corsheaders',
+    'django_filters',
 
     #Custom_coded Apps
     'iot',
 ]
 
 MIDDLEWARE = [
+
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,6 +52,18 @@ MIDDLEWARE = [
     # 'django.middleware.common.CommonMiddleware',
     # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
+
+
+
+#Change to FALSE if you specify the allowed domains
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:8000',
+)
+
+
+
 
 ROOT_URLCONF = 'nodemcu.urls'
 
